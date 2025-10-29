@@ -61,28 +61,32 @@ jobs:
             ksu: true
             repo: "KernelSU-Next/KernelSU-Next"
             branch: "next"
+            susfs_repo: "pershoot"
+            susfs_branch: "next-susfs"
             ksu_patches: "KSUN/WildJames-Manager.patch"
             kernel_patches: "manual_hooks.patch seccomp.patch"
             extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
-            susfs_patch: "KSUN/KSUN-SUSFS-1.5.12.patch"
+#            susfs_patch: "KSUN/KSUN-SUSFS-1.5.12.patch"
             ak3_suffix: "-KSUNext"
 
           - type: RKSU
             ksu: true
             repo: "rsuntk/KernelSU"
             branch: "main"
+            susfs_branch: "susfs-main"
             kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch manual_hooks.patch"
             extra_configs: "CONFIG_KSU_MANUAL_HOOK=y"
-            susfs_patch: "RKSU/RKSU-SUSFS-1.5.12.patch"
+#            susfs_patch: "RKSU/RKSU-SUSFS-1.5.12.patch"
             ak3_suffix: "-RKSU"
 
           - type: SukiSU
             ksu: true
             repo: "SukiSU-Ultra/SukiSU-Ultra"
             branch: "nongki"
+            susfs_branch: "susfs-main"
             kernel_patches: "manual_hooks.patch seccomp.patch"
             extra_configs: "CONFIG_KPROBES_HOOK=n CONFIG_MANUAL_HOOK=y CONFIG_KPM=y"
-            susfs_patch: "SukiSU/SukiSU-SUSFS-1.5.12.patch"
+#            susfs_patch: "SukiSU/SukiSU-SUSFS-1.5.12.patch"
             ak3_suffix: "-SukiSU"
             kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
 
@@ -111,6 +115,12 @@ jobs:
           echo "device=${{ matrix.kernel_config.device || 'MiA3' }}" >> $GITHUB_ENV
           echo "python3=${{ matrix.kernel_config.python3_patch || 'false' }}" >> $GITHUB_ENV
           echo "in_dtbo=${{ matrix.kernel_config.IN_DTBO || 'none' }}" >> $GITHUB_ENV
+
+          ${{ matrix.susfs && matrix.build.susfs_repo || false }} && ksu_repo="${{ matrix.build.susfs_repo }}" || ksu_repo="${{ matrix.build.repo }}" || true
+          echo "ksu_repo=$ksu_repo" >> $GITHUB_ENV
+          ${{ matrix.susfs && matrix.build.susfs_branch || false }} && ksu_branch="${{ matrix.build.susfs_branch }}" || ksu_branch="${{ matrix.build.branch }}" || true
+          echo "ksu_branch=$ksu_branch" >> $GITHUB_ENV
+
 
       - name: Initialize Workspace and Install Tools
         run: |
@@ -177,7 +187,7 @@ jobs:
         working-directory: ${{ env.kernel_folder }}
         run: |
           set -e
-          curl -LSs "https://raw.githubusercontent.com/${{ matrix.build.repo }}/${{ matrix.build.branch }}/kernel/setup.sh" | bash -s ${{ matrix.build.branch }}
+          curl -LSs "https://raw.githubusercontent.com/${{ env.ksu_repo }}/${{ env.ksu_branch }}/kernel/setup.sh" | bash -s ${{ env.ksu_branch }}
 
           if [[ -n "${{ matrix.build.kernel_patches }}" ]]; then
             for patch_name in ${{ matrix.build.kernel_patches }}; do
@@ -223,7 +233,12 @@ jobs:
             *)
               patch -p1 -F 3 -N < "${{ env.patches_dir }}/susfs-1.5.12.patch" || true
               cd KernelSU*
-              patch -p1 -N < "${{ env.patches_dir }}/${{ matrix.build.susfs_patch }}"
+              if [[ -n "${{ matrix.build.susfs_patch }}" ]]; then
+                patch -p1 -N < "${{ env.patches_dir }}/${{ matrix.build.susfs_patch }}"
+              else
+                sed -i 's/TIF_PROC_UMOUNTED/TIF_NON_ROOT_USER_APP_PROC/g' kernel/core_hook.c
+                sed -i 's/_proc_umounted/_non_root_user_app_proc/g' kernel/core_hook.c
+              fi
               ;;
           esac
 
