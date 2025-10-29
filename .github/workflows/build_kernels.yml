@@ -64,7 +64,7 @@ jobs:
             susfs_repo: "pershoot/KernelSU-Next"
             susfs_branch: "next-susfs"
             ksu_patches: "KSUN/WildJames-Manager.patch"
-            kernel_patches: "manual_hooks.patch seccomp.patch"
+            kernel_patches: "manual_hooks.patch seccomp.patch get_cred_rcu.patch strncpy_from_user_nofault.patch"
             extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
 #            susfs_patch: "KSUN/KSUN-SUSFS-1.5.12.patch"
             ak3_suffix: "-KSUNext"
