@@ -85,7 +85,7 @@ jobs:
             branch: "nongki"
             susfs_branch: "susfs-main"
             kernel_patches: "scope-min-hooks-v1.6.patch seccomp.patch"
-            extra_configs: "CONFIG_KPROBES_HOOK=n CONFIG_MANUAL_HOOK=y CONFIG_KPM=y"
+            extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KSU_MANUAL_HOOK=y CONFIG_KPM=y"
 #            susfs_patch: "SukiSU/SukiSU-SUSFS-1.5.12.patch"
             ak3_suffix: "-SukiSU"
             kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
