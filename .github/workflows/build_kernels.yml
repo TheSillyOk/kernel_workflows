@@ -44,6 +44,7 @@ jobs:
             kernel_url: "https://github.com/TheSillyOk/kernel_laurel_sprout"
             kernel_branch: "lineage-18.1"
             tag: "NoName-18.1"
+            defconfig: "vendor/laurel_sprout-perf_defconfig"
             python3_patch: true
 
           - kernel_name: "N-VIC"
@@ -61,33 +62,38 @@ jobs:
           - type: KSUN
             ksu: true
             repo: "KernelSU-Next/KernelSU-Next"
+            folder: "KernelSU-Next"
             branch: "next"
             susfs_repo: "pershoot/KernelSU-Next"
             susfs_branch: "next-susfs"
             ksu_patches: "KSUN/WildJames-Manager.patch"
             kernel_patches: "manual_hooks.patch seccomp.patch get_cred_rcu.patch strncpy_from_user_nofault.patch"
+            susfs_kernel_patches: "susfs-1.5.12.patch"
             extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
-#            susfs_patch: "KSUN/KSUN-SUSFS-1.5.12.patch"
             ak3_suffix: "-KSUNext"
 
           - type: RKSU
             ksu: true
             repo: "rsuntk/KernelSU"
+            folder: "KernelSU"
             branch: "main"
             susfs_branch: "susfs-main"
-            kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch manual_hooks.patch reboot-hook.patch"
+            kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch"
+            susfsless_kernel_patches: "manual_hooks.patch reboot-hook.patch"
+            susfs_kernel_patches: "susfs-1.5.12.patch"
             extra_configs: "CONFIG_KSU_MANUAL_HOOK=y"
-#            susfs_patch: "RKSU/RKSU-SUSFS-1.5.12.patch"
             ak3_suffix: "-RKSU"
 
           - type: SukiSU
             ksu: true
             repo: "SukiSU-Ultra/SukiSU-Ultra"
+            folder: "KernelSU"
             branch: "nongki"
             susfs_branch: "susfs-main"
-            kernel_patches: "scope-min-hooks-v1.6.patch seccomp.patch"
+            susfsless_kernel_patches: "scope-min-hooks-v1.6.patch"
+            kernel_patches: "seccomp.patch"
+            susfs_kernel_patches: "susfs-1.5.12.patch"
             extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KSU_MANUAL_HOOK=y CONFIG_KPM=y"
-#            susfs_patch: "SukiSU/SukiSU-SUSFS-1.5.12.patch"
             ak3_suffix: "-SukiSU"
             kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
 
@@ -107,7 +113,6 @@ jobs:
       - name: Set Environment Variables
         id: vars
         run: |
-          echo "defconfig=${{ matrix.kernel_config.defconfig || 'vendor/laurel_sprout-perf_defconfig' }}" >> $GITHUB_ENV
           echo "config=${{ matrix.kernel_config.config }}" >> $GITHUB_ENV
           echo "patches_url=${{ matrix.kernel_config.patches_url || 'https://github.com/TheSillyOk/kernel_ls_patches' }}" >> $GITHUB_ENV
           echo "patches_branch_arg=${{ matrix.kernel_config.patches_branch && format('-b {0}', matrix.kernel_config.patches_branch) || '' }}" >> $GITHUB_ENV
@@ -167,24 +172,36 @@ jobs:
           set -e
           echo "kernel_folder=${{ env.workspace_folder }}/kernel_tree" >> $GITHUB_ENV
           git clone --depth=1 "${{ matrix.kernel_config.kernel_url }}" ${{ env.kernel_branch_arg }} "${{ env.workspace_folder }}/kernel_tree"
-          
+
           echo "patches_dir=${{ env.workspace_folder }}/kernel_patches" >> $GITHUB_ENV
           git clone --depth=1 "${{ env.patches_url }}" ${{ env.patches_branch_arg }} "${{ env.workspace_folder }}/kernel_patches"
 
           cd "${{ env.workspace_folder }}/kernel_tree"
 
+          kernel_patches="fix_lto.patch ptrace_fix.patch"
+          if [[ -n "${{ matrix.build.kernel_patches }}" ]]; then
+            kernel_patches="$kernel_patches ${{ matrix.build.kernel_patches }}"
+          fi
+          for patch in $kernel_patches; do
+            patch -p1 < "${{ env.workspace_folder }}/kernel_patches/${patch}"
+          done
+
           if ${{ env.python3 }}; then
             patch -p1 < "${{ env.workspace_folder }}/kernel_patches/python3.patch" || true
           fi
-          
-          for patch_name in fix_lto ptrace_fix; do
-            patch -p1 < "${{ env.workspace_folder }}/kernel_patches/${patch_name}.patch" || true
+
+          configs="CONFIG_LTO_CLANG=y CONFIG_LTO_CLANG_THIN=y CONFIG_HAVE_LTO_CLANG=y CONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y CONFIG_MODVERSIONS=n CONFIG_KPROBES=n CONFIG_TMPFS_XATTR=y"
+          if [[ -n "${{ matrix.build.extra_configs }}" ]]; then
+            configs="$configs ${{ matrix.build.extra_configs }}"
+          fi
+          for config in $configs; do
+            echo "--> Added ${config} <--"
+            config_name=$(echo "${config}" | cut -d "=" -f 1)
+            sed -i -E 's/.*($config_name=.*)/# \1/gi' ${{ env.workspace_folder }}/kernel_tree/arch/arm64/configs/${{ matrix.kernel_config.defconfig }}
+            echo -e "\n${config}" >> "${{ env.workspace_folder }}/kernel_tree/arch/arm64/configs/${{ matrix.kernel_config.defconfig }}"
           done
 
           sed -i 's/-dirty//' ./scripts/setlocalversion
-          sed -i -E 's/^.*(CONFIG_LOCALVERSION=)"?([^"]*)"?/\1"\2-Ok"/gi' "arch/arm64/configs/${{ env.defconfig }}"
-          sed -i -E 's/^CONFIG_(LTO[^=]*|HAVE_LTO[^=]*|CC_OPTIMIZE_FOR[^=]*|MODVERSIONS)=(y|n)/# CONFIG_\1=\2/g' "arch/arm64/configs/${{ env.defconfig }}"
-          echo -e "\n\n# Workflow added configs #\nCONFIG_LTO_CLANG=y\nCONFIG_LTO_CLANG_THIN=y\nCONFIG_HAVE_LTO_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=y\nCONFIG_MODVERSIONS=n" >> "arch/arm64/configs/${{ env.defconfig }}"
 
       - name: Apply KernelSU / Forks
         if: matrix.build.ksu
@@ -193,27 +210,34 @@ jobs:
           set -e
           curl -LSs "https://raw.githubusercontent.com/${{ env.ksu_repo }}/${{ env.ksu_branch }}/kernel/setup.sh" | bash -s ${{ env.ksu_branch }}
 
-          if [[ -n "${{ matrix.build.kernel_patches }}" ]]; then
-            for patch_name in ${{ matrix.build.kernel_patches }}; do
-              patch -p1 -N < "${{ env.patches_dir }}/${patch_name}"
-            done
-          fi
-          
-          if [[ -n "${{ matrix.build.ksu_patches }}" ]]; then
-            cd KernelSU*
-            for patch_name in ${{ matrix.build.ksu_patches }}; do
-              patch -p1 -N < "${{ env.patches_dir }}/${patch_name}"
+          if [[ -n "${{ matrix.build.susfsless_kernel_patches }}" && "${{ matrix.susfs }}" != "true" ]]; then
+            for patch_name in ${{ matrix.build.susfsless_kernel_patches }}; do
+              patch -p1 -F 3 < "${{ env.patches_dir }}/${patch_name}"
             done
           fi
 
-          cd ${{ env.kernel_folder }}
-          sed -i -E 's/^CONFIG_(KPROBES|TMPFS_XATTR|KSU[^=]*)=(y|n)/# CONFIG_\1=\2/g' "arch/arm64/configs/${{ env.defconfig }}"
-          echo -e "\nCONFIG_KPROBES=n\nCONFIG_KSU=y\nCONFIG_TMPFS_XATTR=y" >> "arch/arm64/configs/${{ env.defconfig }}"
-          
-          if [[ -n "${{ matrix.build.extra_configs }}" ]]; then
-            for config in ${{ matrix.build.extra_configs }}; do
+          if [[ -n "${{ matrix.build.susfsless_ksu_patches }}" && "${{ matrix.susfs }}" != "true" ]]; then
+            cd "${{ matrix.build.folder }}"
+            for patch_name in ${{ matrix.build.susfsless_ksu_patches }}; do
+              patch -p1 < "${{ env.patches_dir }}/${patch_name}"
+            done
+            cd "${{ env.kernel_folder }}"
+          fi
+
+          if [[ -n "${{ matrix.build.ksu_patches }}" ]]; then
+            cd "${{ matrix.build.folder }}"
+            for patch_name in ${{ matrix.build.ksu_patches }}; do
+              patch -p1 < "${{ env.patches_dir }}/${patch_name}"
+            done
+            cd "${{ env.kernel_folder }}"
+          fi
+
+          if [[ -n "${{ matrix.build.susfsless_configs }}" && "${{ matrix.susfs }}" != "true" ]]; then
+            for config in ${{ matrix.build.susfsless_configs }}; do
               echo "--> Added ${config} <--"
-              echo -e "\n${config}" >> "arch/arm64/configs/${{ env.defconfig }}"
+              config_name=$(echo "${config}" | cut -d "=" -f 1)
+              sed -i -E 's/.*($config_name=.*)/# \1/gi' ${{ env.kernel_folder }}/arch/arm64/configs/${{ matrix.kernel_config.defconfig }}
+              echo -e "\n${config}" >> "${{ env.kernel_folder }}/arch/arm64/configs/${{ matrix.kernel_config.defconfig }}"
             done
           fi
 
@@ -222,26 +246,29 @@ jobs:
         working-directory: ${{ env.kernel_folder }}
         run: |
           set -e
-          SUSFS_FOLDER="${{ env.workspace_folder }}/susfs4ksu"
-          git clone --depth=1 https://gitlab.com/simonpunk/susfs4ksu.git -b "${{ env.susfs_branch }}" "$SUSFS_FOLDER"
 
-          case "${{ matrix.build.type }}" in
-            KSU)
-              patch -p1 -N < "$SUSFS_FOLDER/kernel_patches/50_add_susfs_in_${{ env.susfs_branch }}.patch" || true
-              patch -p1 -N < "${{ env.patches_dir }}/${{ env.patches_folder }}/fix_susfs_rejects.patch" || true
-              cp -r $SUSFS_FOLDER/kernel_patches/fs/* fs/
-              cp -r $SUSFS_FOLDER/kernel_patches/include/linux/* include/linux
-              cd KernelSU
-              patch -p1 -N < "$SUSFS_FOLDER/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch"
-              ;;
-            *)
-              patch -p1 -F 3 -N < "${{ env.patches_dir }}/susfs-1.5.12.patch" || true
-              cd KernelSU*
-              if [[ -n "${{ matrix.build.susfs_patch }}" ]]; then
-                patch -p1 -N < "${{ env.patches_dir }}/${{ matrix.build.susfs_patch }}"
-              fi
-              ;;
-          esac
+          if [[ -n "${{ matrix.build.susfs_ksu_patches }}" ]]; then
+            cd "${{ env.kernel_folder }}/${{ matrix.build.folder }}"
+            for patch_name in ${{ matrix.build.susfs_ksu_patches }}; do
+              patch -p1 -F 3 < "${{ env.patches_dir }}/${patch_name}"
+            done
+          fi
+
+          if [[ -n "${{ matrix.build.susfs_kernel_patches }}" ]]; then
+            for patch_name in ${{ matrix.build.susfs_kernel_patches }}; do
+              patch -p1 -F 3 < "${{ env.patches_dir }}/${patch_name}"
+            done
+            cd "${{ env.kernel_folder }}"
+          fi
+
+          if [[ -n "${{ matrix.build.susfs_configs }}" ]]; then
+            for config in ${{ matrix.build.susfs_configs }}; do
+              echo "--> Added ${config} <--"
+              config_name=$(echo "${config}" | cut -d "=" -f 1)
+              sed -i -E 's/.*($config_name=.*)/# \1/gi' ${{ env.kernel_folder }}/arch/arm64/configs/${{ matrix.kernel_config.defconfig }}
+              echo -e "\n${config}" >> "${{ env.kernel_folder }}/arch/arm64/configs/${{ matrix.kernel_config.defconfig }}"
+            done
+          fi
 
       - name: Build Kernel
         working-directory: ${{ env.kernel_folder }}
@@ -260,7 +287,7 @@ jobs:
 
           mkdir -p "out/arch/arm64/boot/dts/xiaomi/.ginkgo-trinket-overlay.dtbo.qcom-base"
 
-          make O=out ARCH=arm64 ${{ env.defconfig }} ${{ env.config }}
+          make O=out ARCH=arm64 ${{ matrix.kernel_config.defconfig }} ${{ env.config }}
           make O=out DTC_PREBUILT=true DTC=$EXTRA_FOLDER/dtc DTC_OVERLAY_TEST_EXT=$EXTRA_FOLDER/ufdt_apply_overlay MKDTIMG=$EXTRA_FOLDER/mkdtimg CC="ccache clang" LD=ld.lld LLVM=1 LLVM_IAS=1 -j"$(nproc --all)" CROSS_COMPILE=aarch64-linux-gnu-
 
       - name: Create AnyKernel3 Zip
@@ -338,7 +365,7 @@ jobs:
           echo "date=$(date +"%d/%m/%Y")" >> $GITHUB_ENV
           echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
           echo "nightly_url=https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
-          
+
           if [ '${{ github.event_name }}' == 'schedule' ]; then
             title="A new scheduled build has been made. (SCHEDULED BUILD)"
           elif [ '${{ github.ref_name }}' == 'master' ]; then
