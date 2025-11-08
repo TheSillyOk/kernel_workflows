@@ -74,7 +74,7 @@ jobs:
             repo: "rsuntk/KernelSU"
             branch: "main"
             susfs_branch: "susfs-main"
-            kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch manual_hooks.patch"
+            kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch manual_hooks.patch reboot-hook.patch"
             extra_configs: "CONFIG_KSU_MANUAL_HOOK=y"
 #            susfs_patch: "RKSU/RKSU-SUSFS-1.5.12.patch"
             ak3_suffix: "-RKSU"
