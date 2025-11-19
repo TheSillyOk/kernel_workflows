@@ -235,9 +235,6 @@ jobs:
               cd KernelSU*
               if [[ -n "${{ matrix.build.susfs_patch }}" ]]; then
                 patch -p1 -N < "${{ env.patches_dir }}/${{ matrix.build.susfs_patch }}"
-              else
-                sed -i 's/TIF_PROC_UMOUNTED/TIF_NON_ROOT_USER_APP_PROC/g' kernel/core_hook.c
-                sed -i 's/_proc_umounted/_non_root_user_app_proc/g' kernel/core_hook.c
               fi
               ;;
           esac
