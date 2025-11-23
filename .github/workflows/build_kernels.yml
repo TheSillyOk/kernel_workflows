@@ -206,7 +206,7 @@ jobs:
 
           sed -i 's/-dirty//' ./scripts/setlocalversion
 
-      - name: Apply KernelSU / Forks
+      - name: Apply KSU (${{ matrix.build.type }})
         if: matrix.build.ksu
         working-directory: ${{ env.kernel_folder }}
         run: |
