@@ -384,6 +384,10 @@ jobs:
           echo "run_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
           echo "nightly_url=https://nightly.link/${{ github.repository }}/actions/runs/${{ github.run_id }}" >> $GITHUB_ENV
 
+          git clone --depth=1 "https://github.com/TheSillyOk/sh" "sh"
+          echo "sh_dir=$PWD/sh" >> $GITHUB_ENV
+          echo "artifacts_dir=$PWD/downloaded-artifacts" >> $GITHUB_ENV
+
           if [ '${{ github.event_name }}' == 'schedule' ]; then
             title="A new scheduled build has been made. (SCHEDULED BUILD)"
           elif [ '${{ github.ref_name }}' == 'master' ]; then
@@ -394,22 +398,19 @@ jobs:
           echo "tg_title=$title" >> $GITHUB_ENV
 
           KSUN_URL=$(git ls-remote https://github.com/KernelSU-Next/KernelSU-Next.git HEAD | awk '{print "https://github.com/KernelSU-Next/KernelSU-Next/commit/"$1}')
-          RKSU_URL=$(git ls-remote https://github.com/rsuntk/KernelSU HEAD | awk '{print "https://github.com/rsuntk/KernelSU/commit/"$1}')
-          SUKI_URL=$(git ls-remote https://github.com/SukiSU-Ultra/SukiSU-Ultra nongki | awk '{print "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/"$1}')
-          xxKSU_URL=$(git ls-remote https://github.com/backslashxx/KernelSU HEAD | awk '{print "https://github.com/backslashxx/KernelSU/commit/"$1}')
           echo "KSUN_URL=$KSUN_URL" >> $GITHUB_ENV
-          echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
-          echo "SUKI_URL=$SUKI_URL" >> $GITHUB_ENV
-          echo "xxKSU_URL=$xxKSU_URL" >> $GITHUB_ENV
-
-          git clone --depth=1 "https://github.com/TheSillyOk/sh" "sh"
-
-          echo "sh_dir=$PWD/sh" >> $GITHUB_ENV
-          echo "artifacts_dir=$PWD/downloaded-artifacts" >> $GITHUB_ENV
-
           echo "KSUN_V=$(./sh/get_ksuver.sh "KernelSU-Next" "KernelSU-Next" "next")" >> $GITHUB_ENV
+
+          RKSU_URL=$(git ls-remote https://github.com/rsuntk/KernelSU HEAD | awk '{print "https://github.com/rsuntk/KernelSU/commit/"$1}')
+          echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
           echo "RKSU_V=$(./sh/get_ksuver.sh "rsuntk" "KernelSU" "main")" >> $GITHUB_ENV
+
+          SUKI_URL=$(git ls-remote https://github.com/SukiSU-Ultra/SukiSU-Ultra nongki | awk '{print "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/"$1}')
+          echo "SUKI_URL=$SUKI_URL" >> $GITHUB_ENV
           echo "SUKI_V=$(./sh/get_ksuver.sh "SukiSU-Ultra" "SukiSU-Ultra" "main")" >> $GITHUB_ENV
+
+          xxKSU_URL=$(git ls-remote https://github.com/backslashxx/KernelSU HEAD | awk '{print "https://github.com/backslashxx/KernelSU/commit/"$1}')
+          echo "xxKSU_URL=$xxKSU_URL" >> $GITHUB_ENV
           echo "xxKSU_V=$(./sh/get_ksuver.sh "backslashxx" "KernelSU" "master")" >> $GITHUB_ENV
 
       - name: Generate Release Body
