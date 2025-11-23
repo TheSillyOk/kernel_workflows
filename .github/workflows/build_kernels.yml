@@ -312,23 +312,37 @@ jobs:
             curl -LSs "${{ matrix.build.kpm }}" -o patch && chmod 777 patch
             img_file=$(find . -type f -name "Image"* -maxdepth 1)
             echo "$img_file"
+
+            # Decompress the kernel image if it's compressed
             if [[ "$img_file" == "./Image.gz"* ]]; then
               dd if="$img_file" bs=1 | gunzip > Image || true
               echo "-> Convert to: Image"
+            elif [[ "$img_file" == "./Image.lz4" ]]; then
+              lz4 -d "$img_file" Image
+              echo "-> Decompress to: Image"
             fi
+
             ./patch && mv oImage Image
+
+            # Re-compress the kernel image to its original format
             if [[ "$img_file" == "./Image.gz"* ]]; then
               gzip -c Image > Image.gz
               rm Image
               echo "-> Compress: Image.gz"
+              # Special handling for images with appended DTB
+              if [[ "$img_file" == "./Image.gz-dtb" ]]; then
+                compressed_length=$(dd if=Image.gz-dtb bs=1 $skip | gzip -c | wc -c)
+                dd if=Image.gz-dtb bs=1 skip=$compressed_length > dtb
+                cat Image.gz dtb > Image.gz-dtb
+                rm Image.gz && rm dtb
+                echo "-- Image.gz -> Image.gz-dtb"
+              fi
+            elif [[ "$img_file" == "./Image.lz4" ]]; then
+              lz4 -f Image Image.lz4
+              rm Image
+              echo "-> Compress: Image.lz4"
             fi
-            if [[ "$img_file" == "./Image.gz-dtb" ]]; then
-              compressed_length=$(dd if=Image.gz-dtb bs=1 $skip | gzip -c | wc -c)
-              dd if=Image.gz-dtb bs=1 skip=$compressed_length > dtb
-              cat Image.gz dtb > Image.gz-dtb
-              rm Image.gz && rm dtb
-              echo "-- Image.gz -> Image.gz-dtb"
-            fi
+
             rm patch
             cd -
           fi
