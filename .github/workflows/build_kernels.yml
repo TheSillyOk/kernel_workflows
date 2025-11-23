@@ -97,6 +97,15 @@ jobs:
             ak3_suffix: "-SukiSU"
             kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
 
+          - type: xxKSU
+            ksu: true
+            exclude: susfs
+            repo: "backslashxx/KernelSU"
+            folder: "KernelSU"
+            branch: "master"
+            kernel_patches: "scope-min-hooks-v1.6.patch"
+            ak3_suffix: "-xxKSU"
+
         susfs: [false, true]
         exclude:
           - build:
