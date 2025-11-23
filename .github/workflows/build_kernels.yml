@@ -55,6 +55,7 @@ jobs:
         build:
           - type: Normal
             ksu: false
+            exclude: susfs
             ak3_suffix: ""
 
           - type: KSUN
@@ -93,8 +94,11 @@ jobs:
         susfs: [false, true]
         exclude:
           - build:
-              type: "Normal"
+              exclude: susfs
             susfs: true
+          - build:
+              exclude: susfsless
+            susfs: false
 
     permissions:
       contents: write
