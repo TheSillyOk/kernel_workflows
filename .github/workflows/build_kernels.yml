@@ -396,9 +396,11 @@ jobs:
           KSUN_URL=$(git ls-remote https://github.com/KernelSU-Next/KernelSU-Next.git HEAD | awk '{print "https://github.com/KernelSU-Next/KernelSU-Next/commit/"$1}')
           RKSU_URL=$(git ls-remote https://github.com/rsuntk/KernelSU HEAD | awk '{print "https://github.com/rsuntk/KernelSU/commit/"$1}')
           SUKI_URL=$(git ls-remote https://github.com/SukiSU-Ultra/SukiSU-Ultra nongki | awk '{print "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/"$1}')
+          xxKSU_URL=$(git ls-remote https://github.com/backslashxx/KernelSU HEAD | awk '{print "https://github.com/backslashxx/KernelSU/commit/"$1}')
           echo "KSUN_URL=$KSUN_URL" >> $GITHUB_ENV
           echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
           echo "SUKI_URL=$SUKI_URL" >> $GITHUB_ENV
+          echo "xxKSU_URL=$xxKSU_URL" >> $GITHUB_ENV
 
           git clone --depth=1 "https://github.com/TheSillyOk/sh" "sh"
 
@@ -408,6 +410,7 @@ jobs:
           echo "KSUN_V=$(./sh/get_ksuver.sh "KernelSU-Next" "KernelSU-Next" "next")" >> $GITHUB_ENV
           echo "RKSU_V=$(./sh/get_ksuver.sh "rsuntk" "KernelSU" "main")" >> $GITHUB_ENV
           echo "SUKI_V=$(./sh/get_ksuver.sh "SukiSU-Ultra" "SukiSU-Ultra" "main")" >> $GITHUB_ENV
+          echo "xxKSU_V=$(./sh/get_ksuver.sh "backslashxx" "KernelSU" "master")" >> $GITHUB_ENV
 
       - name: Generate Release Body
         id: release_body
@@ -427,11 +430,13 @@ jobs:
           -> Rissu's KernelSU (\`RKSU\`): [Manager](https://github.com/rsuntk/KernelSU/releases) / [CI* channel](https://t.me/rsukrnlsu)
           -> KernelSU-Next (\`KSUN\`): [Releases](https://github.com/rifsxd/KernelSU-Next/releases) / [CI builds](https://t.me/ksunext_ci)
           -> SukiSU-Ultra (\`SUKI\`): [Releases](https://github.com/SukiSU-Ultra/SukiSU-Ultra/releases) / [CI builds](https://t.me/Sukiksu/7114/)
+          -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants & susfs:
           -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }}) - SUSFS 1.5.12
           -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }}) - SUSFS 1.5.12
           -> SukiSU-Ultra (\`SUKI\`): [${{ env.SUKI_V }})](${{ env.SUKI_URL }}) - SUSFS 1.5.12
+          -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
           EOF
@@ -507,4 +512,5 @@ jobs:
             
             • KernelSU-Next (KSUN) [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
             • Rissu's KernelSU (RKSU) [${{ env.RKSU_V }}](${{ env.RKSU_URL }})
-            • SukiSU-Ultra (SUKI) [${{ env.SUKI_V }}](${{ env.SUKI_URL }})"
+            • SukiSU-Ultra (SUKI) [${{ env.SUKI_V }}](${{ env.SUKI_URL }})
+            • xx's KernelSU (xxKSU) [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})"
