@@ -47,12 +47,6 @@ jobs:
             defconfig: "vendor/laurel_sprout-perf_defconfig"
             python3_patch: true
 
-          - kernel_name: "N-VIC"
-            kernel_url: "https://github.com/TheSillyOk/kernel_laurel_sprout"
-            kernel_branch: "vic"
-            tag: "NoName-VIC"
-            python3_patch: true
-
         build:
           - type: Normal
             ksu: false
