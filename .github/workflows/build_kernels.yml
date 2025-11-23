@@ -80,6 +80,7 @@ jobs:
 
           - type: SukiSU
             ksu: true
+            exclude: susfs
             repo: "SukiSU-Ultra/SukiSU-Ultra"
             folder: "KernelSU"
             branch: "nongki"
