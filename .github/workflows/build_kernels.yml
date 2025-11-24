@@ -257,13 +257,13 @@ jobs:
             for patch_name in ${{ matrix.build.susfs_ksu_patches }}; do
               patch -p1 -F 3 < "${{ env.patches_dir }}/${patch_name}"
             done
+            cd "${{ env.kernel_folder }}"
           fi
 
           if [[ -n "${{ matrix.build.susfs_kernel_patches }}" ]]; then
             for patch_name in ${{ matrix.build.susfs_kernel_patches }}; do
               patch -p1 -F 3 < "${{ env.patches_dir }}/${patch_name}"
             done
-            cd "${{ env.kernel_folder }}"
           fi
 
           if [[ -n "${{ matrix.build.susfs_configs }}" ]]; then
