@@ -72,23 +72,24 @@ jobs:
             repo: "rsuntk/KernelSU"
             folder: "KernelSU"
             branch: "main"
-            susfs_branch: "susfs-main"
-            kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch manual_hooks.patch"
-            susfsless_kernel_patches: "reboot-hook.patch"
-            susfs_kernel_patches: "susfs-1.5.12.patch"
-            extra_configs: "CONFIG_KSU_MANUAL_HOOK=y"
+            susfs_branch: "susfs-rksu-master"
+            kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch"
+            susfsless_kernel_patches: "manual_hooks.patch reboot-hook.patch"
+            susfs_kernel_patches: "susfs-2.0.0.patch"
+            extra_configs: "CONFIG_KSU_MANUAL_HOOK=y CONFIG_KSU_SYSCALL_HOOK=n"
+            susfs_configs: "CONFIG_KSU_SUSFS=y"
             ak3_suffix: "-RKSU"
 
           - type: SukiSU
             ksu: true
-            exclude: susfs
             repo: "SukiSU-Ultra/SukiSU-Ultra"
             folder: "KernelSU"
             branch: "nongki"
             susfs_branch: "susfs-main"
             susfsless_kernel_patches: "scope-min-hooks-v1.6.patch"
             kernel_patches: "seccomp.patch"
-            susfs_kernel_patches: "susfs-1.5.12.patch"
+            susfs_kernel_patches: "susfs-2.0.0.patch"
+            susfs_ksu_patches: "SukiSU/umount_manager-fix.patch"
             extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KSU_MANUAL_HOOK=y CONFIG_KPM=y"
             ak3_suffix: "-SukiSU"
             kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
@@ -268,6 +269,11 @@ jobs:
             done
           fi
 
+          # Holy fucking hacky fix
+          if [[ "${{ matrix.build.susfs_kernel_patches }}" == *"susfs-2"* && "${{ matrix.kernel_config.kernel_name }}" == "N18.1" ]]; then
+            patch -p1 < "${{ env.patches_dir }}/fix-n18.1-susfs-2.0.0.patch"
+          fi
+
           if [[ -n "${{ matrix.build.susfs_configs }}" ]]; then
             for config in ${{ matrix.build.susfs_configs }}; do
               echo "--> Added ${config} <--"
@@ -437,9 +443,9 @@ jobs:
           -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants & susfs:
-          -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }}) - SUSFS 1.5.12
+          -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }}) - SUSFS 2.0.0
           -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }}) - SUSFS 1.5.12
-          -> SukiSU-Ultra (\`SUKI\`): [${{ env.SUKI_V }})](${{ env.SUKI_URL }})
+          -> SukiSU-Ultra (\`SUKI\`): [${{ env.SUKI_V }})](${{ env.SUKI_URL }}) - SUSFS 2.0.0
           -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
