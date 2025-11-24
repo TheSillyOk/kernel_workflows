@@ -169,8 +169,10 @@ jobs:
           path: ~/.ccache
           key: ${{ env.device }}-${{ matrix.build.type }}-${{ matrix.kernel_config.tag }}-SUSFS_${{ matrix.susfs }}-ccache-${{ github.sha }}-${{ github.run_number }}
           restore-keys: |
-            ${{ env.device }}-${{ matrix.build.type }}-${{ matrix.kernel_config.tag }}-SUSFS_${{ matrix.susfs }}-ccache-${{ github.sha }}
             ${{ env.device }}-${{ matrix.build.type }}-${{ matrix.kernel_config.tag }}-SUSFS_${{ matrix.susfs }}-ccache-
+            ${{ env.device }}-${{ matrix.build.type }}-${{ matrix.kernel_config.tag }}-
+            -${{ matrix.build.type }}-${{ matrix.kernel_config.tag }}-
+            -${{ matrix.kernel_config.tag }}-
 
       - name: Prepare Kernel Source
         run: |
