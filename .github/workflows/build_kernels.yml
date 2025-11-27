@@ -89,7 +89,6 @@ jobs:
             susfsless_kernel_patches: "scope-min-hooks-v1.6.patch"
             kernel_patches: "seccomp.patch"
             susfs_kernel_patches: "susfs-2.0.0.patch"
-            susfs_ksu_patches: "SukiSU/umount_manager-fix.patch"
             extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KSU_MANUAL_HOOK=y CONFIG_KPM=y"
             ak3_suffix: "-SukiSU"
             kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
