@@ -421,7 +421,7 @@ jobs:
           echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
           echo "RKSU_V=$(./sh/get_ksuver.sh "rsuntk" "KernelSU" "main")" >> $GITHUB_ENV
 
-          SUKI_URL=$(git ls-remote https://github.com/SukiSU-Ultra/SukiSU-Ultra nongki | awk '{print "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/"$1}')
+          SUKI_URL=$(git ls-remote https://github.com/SukiSU-Ultra/SukiSU-Ultra builtin | awk '{print "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/"$1}')
           echo "SUKI_URL=$SUKI_URL" >> $GITHUB_ENV
           echo "SUKI_V=$(./sh/get_ksuver.sh "SukiSU-Ultra" "SukiSU-Ultra" "main")" >> $GITHUB_ENV
 
