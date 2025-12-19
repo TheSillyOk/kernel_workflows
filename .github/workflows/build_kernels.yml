@@ -415,9 +415,9 @@ jobs:
           fi
           echo "tg_title=$title" >> $GITHUB_ENV
 
-          KSUN_URL=$(git ls-remote https://github.com/KernelSU-Next/KernelSU-Next.git HEAD | awk '{print "https://github.com/KernelSU-Next/KernelSU-Next/commit/"$1}')
+          KSUN_URL=$(git ls-remote https://github.com/KernelSU-Next/KernelSU-Next.git legacy | awk '{print "https://github.com/KernelSU-Next/KernelSU-Next/commit/"$1}')
           echo "KSUN_URL=$KSUN_URL" >> $GITHUB_ENV
-          echo "KSUN_V=$(./sh/get_ksuver.sh "KernelSU-Next" "KernelSU-Next" "next")" >> $GITHUB_ENV
+          echo "KSUN_V=$(./sh/get_ksuver.sh "KernelSU-Next" "KernelSU-Next" "legacy")" >> $GITHUB_ENV
 
           RKSU_URL=$(git ls-remote https://github.com/rsuntk/KernelSU HEAD | awk '{print "https://github.com/rsuntk/KernelSU/commit/"$1}')
           echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
