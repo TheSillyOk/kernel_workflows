@@ -86,19 +86,19 @@ jobs:
             susfs_configs: "CONFIG_KSU_SUSFS=y"
             ak3_suffix: "-RKSU"
 
-          - type: SukiSU
-            ksu: true
-            repo: "SukiSU-Ultra/SukiSU-Ultra"
-            folder: "KernelSU"
-            branch: "builtin"
-            kernel_patches: "seccomp.patch"
-            susfsless_kernel_patches: "manual_hooks.patch reboot-hook.patch"
-            susfs_kernel_patches: "susfs-2.0.0.patch"
-            extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KPM=y"
-            susfs_configs: "CONFIG_KSU_SUSFS=y CONFIG_KSU_NONE_HOOK=y"
-            susfsless_configs: "CONFIG_KSU_MANUAL_HOOK=y"
-            ak3_suffix: "-SukiSU"
-            kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
+#          - type: SukiSU
+#            ksu: true
+#            repo: "SukiSU-Ultra/SukiSU-Ultra"
+#            folder: "KernelSU"
+#            branch: "builtin"
+#            kernel_patches: "seccomp.patch"
+#            susfsless_kernel_patches: "manual_hooks.patch reboot-hook.patch"
+#            susfs_kernel_patches: "susfs-2.0.0.patch"
+#            extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KPM=y"
+#            susfs_configs: "CONFIG_KSU_SUSFS=y CONFIG_KSU_NONE_HOOK=y"
+#            susfsless_configs: "CONFIG_KSU_MANUAL_HOOK=y"
+#            ak3_suffix: "-SukiSU"
+#            kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
 
           - type: xxKSU
             ksu: true
@@ -445,13 +445,11 @@ jobs:
           KSU Managers:
           -> Rissu's KernelSU (\`RKSU\`): [Manager](https://github.com/rsuntk/KernelSU/releases) / [CI* channel](https://t.me/rsukrnlsu)
           -> KernelSU-Next (\`KSUN\`): [Releases](https://github.com/rifsxd/KernelSU-Next/releases) / [CI builds](https://t.me/ksunext_ci)
-          -> SukiSU-Ultra (\`SUKI\`): [Releases](https://github.com/SukiSU-Ultra/SukiSU-Ultra/releases) / [CI builds](https://t.me/Sukiksu/7114/)
           -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants & susfs:
           -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }}) - SUSFS 2.0.0
           -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }}) - SUSFS 1.5.12
-          -> SukiSU-Ultra (\`SUKI\`): [${{ env.SUKI_V }})](${{ env.SUKI_URL }}) - SUSFS 2.0.0
           -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
@@ -528,5 +526,4 @@ jobs:
             
             • KernelSU-Next (KSUN) [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
             • Rissu's KernelSU (RKSU) [${{ env.RKSU_V }}](${{ env.RKSU_URL }})
-            • SukiSU-Ultra (SUKI) [${{ env.SUKI_V }}](${{ env.SUKI_URL }})
             • xx's KernelSU (xxKSU) [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})"
