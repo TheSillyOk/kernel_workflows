@@ -62,17 +62,14 @@ jobs:
 
           - type: KSUN
             ksu: true
-            exclude: susfs
             repo: "KernelSU-Next/KernelSU-Next"
             folder: "KernelSU-Next"
             branch: "legacy"
-            susfs_repo: "pershoot/KernelSU-Next"
-            susfs_branch: "next-susfs"
             ksu_patches: "KSUN/WildJames-Manager.patch"
-            susfs_ksu_patches: "KSUN/revert-fsnotify.patch"
+            susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
             kernel_patches: "seccomp.patch get_cred_rcu.patch strncpy_from_user_nofault.patch"
             susfsless_kernel_patches: "scope-min-hooks-v1.6.patch"
-            susfs_kernel_patches: "susfs-1.5.12.patch"
+            susfs_kernel_patches: "susfs-2.0.0.patch"
             extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
             ak3_suffix: "-KSUNext"
 
