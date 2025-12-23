@@ -80,7 +80,7 @@ jobs:
             branch: "main"
             susfs_branch: "susfs-rksu-master"
             kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch"
-            susfsless_kernel_patches: "manual_hooks.patch reboot-hook.patch"
+            susfsless_kernel_patches: "rksu_hook.patch"
             susfs_kernel_patches: "susfs-2.0.0.patch"
             extra_configs: "CONFIG_KSU_MANUAL_HOOK=y CONFIG_KSU_SYSCALL_HOOK=n"
             susfs_configs: "CONFIG_KSU_SUSFS=y"
