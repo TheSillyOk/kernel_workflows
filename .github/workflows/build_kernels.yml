@@ -62,6 +62,7 @@ jobs:
 
           - type: KSUN
             ksu: true
+            exclude: susfs
             repo: "KernelSU-Next/KernelSU-Next"
             folder: "KernelSU-Next"
             branch: "legacy"
