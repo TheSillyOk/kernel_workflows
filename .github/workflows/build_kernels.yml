@@ -62,14 +62,12 @@ jobs:
 
           - type: KSUN
             ksu: true
-            exclude: susfs
             repo: "KernelSU-Next/KernelSU-Next"
             folder: "KernelSU-Next"
             branch: "legacy"
             ksu_patches: "KSUN/WildJames-Manager.patch"
             susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
-            kernel_patches: "seccomp.patch get_cred_rcu.patch strncpy_from_user_nofault.patch"
-            susfsless_kernel_patches: "scope-min-hooks-v1.6.patch"
+            kernel_patches: "seccomp.patch get_cred_rcu.patch strncpy_from_user_nofault.patch scope-min-hooks-v1.6.patch"
             susfs_kernel_patches: "susfs-2.0.0.patch"
             extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
             ak3_suffix: "-KSUNext"
@@ -82,7 +80,7 @@ jobs:
             susfs_branch: "susfs-rksu-master"
             kernel_patches: "get_cred_rcu.patch strncpy_from_user_nofault.patch"
             susfsless_kernel_patches: "rksu_hook.patch"
-            susfs_kernel_patches: "susfs-2.0.0.patch"
+            susfs_kernel_patches: "susfs-2.0.0.patch susfs-inline-hooks.patch"
             extra_configs: "CONFIG_KSU_MANUAL_HOOK=y CONFIG_KSU_SYSCALL_HOOK=n"
             susfs_configs: "CONFIG_KSU_SUSFS=y"
             ak3_suffix: "-RKSU"
@@ -277,8 +275,8 @@ jobs:
           fi
 
           # Holy fucking hacky fix
-          if [[ "${{ matrix.build.susfs_kernel_patches }}" == *"susfs-2"* && "${{ matrix.kernel_config.kernel_name }}" == "N18.1" ]]; then
-            patch -p1 < "${{ env.patches_dir }}/fix-n18.1-susfs-2.0.0.patch"
+          if [[ "${{ matrix.build.susfs_kernel_patches }}" == *"susfs-inline"* && "${{ matrix.kernel_config.kernel_name }}" == "N18.1" ]]; then
+            patch -p1 < "${{ env.patches_dir }}/fix-n18.1-inline-hooks.patch"
           fi
 
           if [[ -n "${{ matrix.build.susfs_configs }}" ]]; then
