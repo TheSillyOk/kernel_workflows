@@ -191,7 +191,7 @@ jobs:
 
           cd "${{ env.workspace_folder }}/kernel_tree"
 
-          kernel_patches="fix_lto.patch ptrace_fix.patch"
+          kernel_patches="fix_lto.patch ptrace_fix.patch kpatch_fix.patch"
           if [[ -n "${{ matrix.build.kernel_patches }}" ]]; then
             kernel_patches="$kernel_patches ${{ matrix.build.kernel_patches }}"
           fi
