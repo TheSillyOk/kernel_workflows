@@ -65,7 +65,6 @@ jobs:
             repo: "KernelSU-Next/KernelSU-Next"
             folder: "KernelSU-Next"
             branch: "legacy"
-            ksu_patches: "KSUN/WildJames-Manager.patch"
             susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
             kernel_patches: "seccomp.patch scope-min-hooks-v1.6.patch"
             susfs_kernel_patches: "susfs-2.0.0.patch"
@@ -105,7 +104,7 @@ jobs:
             repo: "backslashxx/KernelSU"
             folder: "KernelSU"
             branch: "master"
-            kernel_patches: "scope-min-hooks-v1.6.patch"
+            kernel_patches: "scope-min-hooks-v1.9.patch"
             ak3_suffix: "-xxKSU"
 
         susfs: [false, true]
