@@ -149,7 +149,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends python3-pip git zip unzip gcc g++ make ninja-build file bc bison flex libfl-dev libssl-dev libelf-dev wget build-essential python3-dev python3-setuptools rsync ccache llvm-dev libncurses6 libfdt-dev binwalk
 
       - name: Cache Clang
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-clang
         with:
           path: ${{ env.workspace_folder }}/clang
@@ -169,7 +169,7 @@ jobs:
           echo "CCACHE_DIR=$HOME/.ccache" >> $GITHUB_ENV
 
       - name: Cache Kernel Build
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.ccache
           key: ${{ env.device }}-${{ matrix.build.type }}-${{ matrix.kernel_config.tag }}-SUSFS_${{ matrix.susfs }}-ccache-${{ github.sha }}-${{ github.run_number }}
@@ -373,7 +373,7 @@ jobs:
           echo "anykernel_zipname=$ZIP_NAME" >> $GITHUB_ENV
 
       - name: Upload AnyKernel Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ env.anykernel_zipname }}
           path: ${{ env.ak_folder }}/*
@@ -386,7 +386,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           path: ./downloaded-artifacts
 
@@ -446,8 +446,8 @@ jobs:
           -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants & susfs:
-          -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }}) - SUSFS 2.0.0
-          -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }}) - SUSFS 1.5.12
+          -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }})
+          -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }}) - SUSFS 2.0.0
           -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
