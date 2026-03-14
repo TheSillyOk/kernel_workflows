@@ -21,9 +21,9 @@ jobs:
         kernel_config:
           - kernel_name: "SM6125"
             kernel_url: "https://github.com/LineageOS/android_kernel_xiaomi_sm6125"
-            kernel_branch: "lineage-23.0"
+            kernel_branch: "lineage-23.2"
             anykernel_branch: "sm6125"
-            tag: "SM6125-23.0"
+            tag: "SM6125-23.2"
             defconfig: "vendor/trinket-perf_defconfig"
             config: "vendor/xiaomi-trinket.config vendor/laurel_sprout.config"
             patches_folder: "sm6125"
@@ -32,9 +32,9 @@ jobs:
           - kernel_name: "SM6125 - Ginkgo"
             device: Ginkgo
             kernel_url: "https://github.com/LineageOS/android_kernel_xiaomi_sm6125"
-            kernel_branch: "lineage-23.0"
+            kernel_branch: "lineage-23.2"
             anykernel_branch: "ginkgo"
-            tag: "SM6125-23.0"
+            tag: "SM6125-23.2"
             defconfig: "vendor/trinket-perf_defconfig"
             config: "vendor/xiaomi-trinket.config vendor/ginkgo.config"
             patches_folder: "sm6125"
