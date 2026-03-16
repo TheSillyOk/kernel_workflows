@@ -73,6 +73,7 @@ jobs:
 
           - type: RKSU
             ksu: true
+            exclude: susfs
             repo: "rsuntk/KernelSU"
             folder: "KernelSU"
             branch: "main"
