@@ -269,13 +269,15 @@ jobs:
 
           if [[ -n "${{ matrix.build.susfs_kernel_patches }}" ]]; then
             for patch_name in ${{ matrix.build.susfs_kernel_patches }}; do
-              patch -p1 -F 3 < "${{ env.patches_dir }}/${patch_name}"
+              patch -p1 < "${{ env.patches_dir }}/${patch_name}" || true
             done
           fi
 
-          # Holy fucking hacky fix
           if [[ "${{ matrix.build.susfs_kernel_patches }}" == *"susfs-inline"* && "${{ matrix.kernel_config.kernel_name }}" == "N18.1" ]]; then
             patch -p1 < "${{ env.patches_dir }}/fix-n18.1-inline-hooks.patch"
+          fi
+          if [[ "${{ matrix.build.kernel_patches }}" == *"susfs-2.0.0"* && "${{ matrix.kernel_config.tag }}" == *"NoName"* ]]; then
+            patch -p1 < "${{ env.patches_dir }}/fix-noname-susfs-2.0.0.patch"
           fi
 
           if [[ -n "${{ matrix.build.susfs_configs }}" ]]; then
