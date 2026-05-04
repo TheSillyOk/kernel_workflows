@@ -85,19 +85,17 @@ jobs:
             susfs_configs: "CONFIG_KSU_SUSFS=y"
             ak3_suffix: "-RKSU"
 
-#          - type: SukiSU
-#            ksu: true
-#            repo: "SukiSU-Ultra/SukiSU-Ultra"
-#            folder: "KernelSU"
-#            branch: "builtin"
-#            kernel_patches: "seccomp.patch"
-#            susfsless_kernel_patches: "manual_hooks.patch reboot-hook.patch"
-#            susfs_kernel_patches: "susfs-2.0.0.patch"
-#            extra_configs: "CONFIG_KSU_MANUAL_SU=n CONFIG_KPM=y"
-#            susfs_configs: "CONFIG_KSU_SUSFS=y CONFIG_KSU_NONE_HOOK=y"
-#            susfsless_configs: "CONFIG_KSU_MANUAL_HOOK=y"
-#            ak3_suffix: "-SukiSU"
-#            kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
+          - type: ReSukiSU
+            ksu: true
+            repo: "ReSukiSU/ReSukiSU"
+            folder: "KernelSU"
+            branch: "main"
+            susfsless_kernel_patches: "scope-min-hooks-v1.9.patch"
+            extra_configs: "CONFIG_KPM=y CONFIG_KSU_TOOLKIT_SUPPORT=y"
+            susfs_configs: "CONFIG_KSU_SUSFS=y"
+            susfsless_configs: "CONFIG_KSU_MANUAL_HOOK=y"
+            ak3_suffix: "-SukiSU"
+            kpm: "https://raw.githubusercontent.com/ShirkNeko/SukiSU_patch/refs/heads/main/kpm/patch_linux"
 
           - type: xxKSU
             ksu: true
@@ -421,9 +419,9 @@ jobs:
           echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
           echo "RKSU_V=$(./sh/get_ksuver.sh "rsuntk" "KernelSU" "main")" >> $GITHUB_ENV
 
-          SUKI_URL=$(git ls-remote https://github.com/SukiSU-Ultra/SukiSU-Ultra builtin | awk '{print "https://github.com/SukiSU-Ultra/SukiSU-Ultra/commit/"$1}')
-          echo "SUKI_URL=$SUKI_URL" >> $GITHUB_ENV
-          echo "SUKI_V=$(./sh/get_ksuver.sh "SukiSU-Ultra" "SukiSU-Ultra" "main")" >> $GITHUB_ENV
+          ReSUKI_URL=$(git ls-remote https://github.com/ReSukiSU/ReSukiSU main | awk '{print "https://github.com/ReSukiSU/ReSukiSU/commit/"$1}')
+          echo "ReSUKI_URL=$ReSUKI_URL" >> $GITHUB_ENV
+          echo "ReSUKI_V=$(./sh/get_ksuver.sh "ReSukiSu" "ReSukiSU" "main")" >> $GITHUB_ENV
 
           xxKSU_URL=$(git ls-remote https://github.com/backslashxx/KernelSU HEAD | awk '{print "https://github.com/backslashxx/KernelSU/commit/"$1}')
           echo "xxKSU_URL=$xxKSU_URL" >> $GITHUB_ENV
@@ -433,7 +431,7 @@ jobs:
         id: release_body
         run: |
           cat << EOF > release_body.md
-          Kernels w/ KSU (and forks) + SUSFS by @TheSillyOk
+          Kernels w/ KSU (and forks) by @TheSillyOk
 
           Updated: ${{ env.date }}
 
@@ -441,16 +439,16 @@ jobs:
 
           [Github run](${{ env.run_url }}) • [Nightly run](${{ env.nightly_url }}) • CI run n°${{ github.run_number }}
 
-          [SUSFS Module](https://github.com/sidex15/ksu_module_susfs/releases)
-
           KSU Managers:
           -> Rissu's KernelSU (\`RKSU\`): [Manager](https://github.com/rsuntk/KernelSU/releases) / [CI* channel](https://t.me/rsukrnlsu)
+          -> ReSukiSU (\`ReSUKI\`) [Manager](https://nightly.link/ReSukiSU/ReSukiSU/workflows/build-manager/main/Manager-release.zip) [CI Channel](https://t.me/ReSukiSU/4)
           -> KernelSU-Next (\`KSUN\`): [Releases](https://github.com/rifsxd/KernelSU-Next/releases) / [CI builds](https://t.me/ksunext_ci)
           -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants & susfs:
           -> Rissu's KernelSU  (\`RKSU\`): [${{ env.RKSU_V }}](${{ env.RKSU_URL }})
-          -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }}) - SUSFS 2.0.0
+          -> ReSukiSU (\`ReSUKI\`): [${{ env.ReSUKI_V }}](${{ env.ReSUKI.URL }})
+          -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
           -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
@@ -525,6 +523,7 @@ jobs:
             📆 *Released*: ${{ env.date }}
             [Release](https://github.com/${{ github.repository }}/releases/tag/${{ env.TAG }}) • [Workflow run](${{ env.run_url }}) • [Nightly](${{ env.nightly_url }})
             
-            • KernelSU-Next (KSUN) [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
             • Rissu's KernelSU (RKSU) [${{ env.RKSU_V }}](${{ env.RKSU_URL }})
+            • ReSukiSU (ReSUKI) [${{ env.ReSUKI_V }}](${{ env.ReSUKI_URL }})
+            • KernelSU-Next (KSUN) [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
             • xx's KernelSU (xxKSU) [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})"
