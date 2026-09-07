@@ -59,17 +59,6 @@ jobs:
             exclude: susfs
             ak3_suffix: ""
 
-          - type: KSUN
-            ksu: true
-            repo: "KernelSU-Next/KernelSU-Next"
-            folder: "KernelSU-Next"
-            branch: "legacy"
-            susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
-            kernel_patches: "seccomp.patch scope-min-hooks-v1.6.patch"
-            susfs_kernel_patches: "susfs-2.0.0.patch"
-            extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
-            ak3_suffix: "-KSUNext"
-
           - type: ReSukiSU
             ksu: true
             repo: "ReSukiSU/ReSukiSU"
@@ -386,12 +375,10 @@ jobs:
 
           KSU Managers:
           -> ReSukiSU (\`ReSUKI\`) [Manager](https://nightly.link/ReSukiSU/ReSukiSU/workflows/build-manager/main/Manager-release.zip) [CI Channel](https://t.me/ReSukiSU/4)
-          -> KernelSU-Next (\`KSUN\`): [Releases](https://github.com/rifsxd/KernelSU-Next/releases) / [CI builds](https://t.me/ksunext_ci)
           -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants:
           -> ReSukiSU (\`ReSUKI\`): [${{ env.ReSUKI_V }}](${{ env.ReSUKI.URL }})
-          -> KernelSU Next (\`KSUN\`): [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
           -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
@@ -467,5 +454,4 @@ jobs:
             [Release](https://github.com/${{ github.repository }}/releases/tag/${{ env.TAG }}) • [Workflow run](${{ env.run_url }}) • [Nightly](${{ env.nightly_url }})
             
             • ReSukiSU (ReSUKI) [${{ env.ReSUKI_V }}](${{ env.ReSUKI_URL }})
-            • KernelSU-Next (KSUN) [${{ env.KSUN_V }}](${{ env.KSUN_URL }})
             • xx's KernelSU (xxKSU) [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})"
