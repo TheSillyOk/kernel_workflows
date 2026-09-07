@@ -3,7 +3,6 @@ name: Kernel Build
 on:
   workflow_dispatch:
   workflow_call:
-  pull_request:
   push:
     paths-ignore:
       - 'README.md'
@@ -60,16 +59,16 @@ jobs:
             exclude: susfs
             ak3_suffix: ""
 
-#          - type: KSUN
-#            ksu: true
-#            repo: "KernelSU-Next/KernelSU-Next"
-#            folder: "KernelSU-Next"
-#            branch: "legacy"
-#            susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
-#            kernel_patches: "seccomp.patch scope-min-hooks-v1.6.patch"
-#            susfs_kernel_patches: "susfs-2.0.0.patch"
-#            extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
-#            ak3_suffix: "-KSUNext"
+          - type: KSUN
+            ksu: true
+            repo: "KernelSU-Next/KernelSU-Next"
+            folder: "KernelSU-Next"
+            branch: "legacy"
+            susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
+            kernel_patches: "seccomp.patch scope-min-hooks-v1.6.patch"
+            susfs_kernel_patches: "susfs-2.0.0.patch"
+            extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
+            ak3_suffix: "-KSUNext"
 
           - type: ReSukiSU
             ksu: true
@@ -80,8 +79,7 @@ jobs:
             extra_configs: "CONFIG_KSU_TOOLKIT_SUPPORT=y"
             susfs_configs: "CONFIG_KSU_SUSFS=y"
             susfsless_configs: "CONFIG_KSU_MANUAL_HOOK=y"
-            ak3_suffix: "-SukiSU"
-#            kpm: "https://github.com/SukiSU-Ultra/SukiSU_KernelPatch_patch/releases/latest/download/patch_linux"
+            ak3_suffix: "-ReSUKI"
 
           - type: xxKSU
             ksu: true
@@ -181,7 +179,7 @@ jobs:
             kernel_patches="$kernel_patches ${{ matrix.build.kernel_patches }}"
           fi
           for patch in $kernel_patches; do
-            patch -p1 < "${{ env.workspace_folder }}/kernel_patches/${patch}"
+            patch -p1 < "${{ env.workspace_folder }}/kernel_patches/${patch}" || echo "failed to apply ${patch}"
           done
 
           if ${{ env.python3 }}; then
@@ -299,6 +297,7 @@ jobs:
         id: anykernel
         run: |
           set -e
+
           BOOT_FOLDER="${{ env.kernel_folder }}/out/arch/arm64/boot"
           AK3_FOLDER="$BOOT_FOLDER/ak_folder"
           echo "ak_folder=$AK3_FOLDER" >> $GITHUB_ENV
@@ -310,46 +309,6 @@ jobs:
             cp -f "$BOOT_FOLDER/dtbo.img" "$AK3_FOLDER"
           elif [ "${{ env.in_dtbo }}" != "none" ]; then
             python3 "${{ env.kernel_folder }}/extra/mkdtboimg.py" create "$AK3_FOLDER/dtbo.img" --custom0=0x00000000 --custom1=0x00000000 --page_size=4096 "${{ env.kernel_folder }}/${{ env.in_dtbo }}"
-          fi
-
-          if [[ -n "${{ matrix.build.kpm }}" ]]; then
-            cd "$AK3_FOLDER"
-            curl -LSs "${{ matrix.build.kpm }}" -o patch && chmod 777 patch
-            img_file=$(find . -type f -name "Image"* -maxdepth 1)
-            echo "$img_file"
-
-            # Decompress the kernel image if it's compressed
-            if [[ "$img_file" == "./Image.gz"* ]]; then
-              dd if="$img_file" bs=1 | gunzip > Image || true
-              echo "-> Convert to: Image"
-            elif [[ "$img_file" == "./Image.lz4" ]]; then
-              lz4 -d "$img_file" Image
-              echo "-> Decompress to: Image"
-            fi
-
-            ./patch && mv oImage Image
-
-            # Re-compress the kernel image to its original format
-            if [[ "$img_file" == "./Image.gz"* ]]; then
-              gzip -c Image > Image.gz
-              rm Image
-              echo "-> Compress: Image.gz"
-              # Special handling for images with appended DTB
-              if [[ "$img_file" == "./Image.gz-dtb" ]]; then
-                compressed_length=$(dd if=Image.gz-dtb bs=1 $skip | gzip -c | wc -c)
-                dd if=Image.gz-dtb bs=1 skip=$compressed_length > dtb
-                cat Image.gz dtb > Image.gz-dtb
-                rm Image.gz && rm dtb
-                echo "-- Image.gz -> Image.gz-dtb"
-              fi
-            elif [[ "$img_file" == "./Image.lz4" ]]; then
-              lz4 -f Image Image.lz4
-              rm Image
-              echo "-> Compress: Image.lz4"
-            fi
-
-            rm patch
-            cd -
           fi
 
           BUILD_SUFFIX="${{ matrix.build.ak3_suffix }}"
@@ -368,7 +327,6 @@ jobs:
 
   release:
     needs: build
-    if: github.event_name != 'pull_request'
     permissions:
       contents: write
     runs-on: ubuntu-latest
