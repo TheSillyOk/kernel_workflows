@@ -88,7 +88,7 @@ jobs:
             susfs_ksu_patches: "KSUN/KSUN-SUSFS-2.0.0.patch"
             kernel_patches: "seccomp.patch scope-min-hooks-v1.6.patch"
             susfs_kernel_patches: "susfs-2.0.0.patch"
-            extra_configs: "CONFIG_KSU_KPROBES_HOOK=n"
+            extra_configs: "CONFIG_KSU_KPROBES_HOOK=n CONFIG_KSU_MANUAL_HOOK=y"
             ak3_suffix: "-KSUNext"
 
           - type: BakaSU
