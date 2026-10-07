@@ -59,16 +59,16 @@ jobs:
             exclude: susfs
             ak3_suffix: ""
 
-          - type: ReSukiSU
+          - type: BakaSU
             ksu: true
-            repo: "ReSukiSU/ReSukiSU"
+            repo: "Baka-SU/BakaSU"
             folder: "KernelSU"
             branch: "main"
             susfsless_kernel_patches: "scope-min-hooks-v1.9.patch selinux_stuff.patch"
             extra_configs: "CONFIG_KSU_TOOLKIT_SUPPORT=y"
             susfs_configs: "CONFIG_KSU_SUSFS=y"
             susfsless_configs: "CONFIG_KSU_MANUAL_HOOK=y"
-            ak3_suffix: "-ReSUKI"
+            ak3_suffix: "-BakaSU"
 
           - type: xxKSU
             ksu: true
@@ -353,9 +353,9 @@ jobs:
           echo "RKSU_URL=$RKSU_URL" >> $GITHUB_ENV
           echo "RKSU_V=$(./sh/get_ksuver.sh "rsuntk" "KernelSU" "main")" >> $GITHUB_ENV
 
-          ReSUKI_URL=$(git ls-remote https://github.com/ReSukiSU/ReSukiSU main | awk '{print "https://github.com/ReSukiSU/ReSukiSU/commit/"$1}')
-          echo "ReSUKI_URL=$ReSUKI_URL" >> $GITHUB_ENV
-          echo "ReSUKI_V=$(./sh/get_ksuver.sh "ReSukiSu" "ReSukiSU" "main")" >> $GITHUB_ENV
+          BakaSU_URL=$(git ls-remote https://github.com/Baka-SU/BakaSU main | awk '{print "https://github.com/Baka-SU/BakaSU/commit/"$1}')
+          echo "BakaSU_URL=$BakaSU_URL" >> $GITHUB_ENV
+          echo "BakaSU_V=$(./sh/get_ksuver.sh "BakaSU" "BakaSU" "main")" >> $GITHUB_ENV
 
           xxKSU_URL=$(git ls-remote https://github.com/backslashxx/KernelSU HEAD | awk '{print "https://github.com/backslashxx/KernelSU/commit/"$1}')
           echo "xxKSU_URL=$xxKSU_URL" >> $GITHUB_ENV
@@ -374,11 +374,11 @@ jobs:
           [Github run](${{ env.run_url }}) • [Nightly run](${{ env.nightly_url }}) • CI run n°${{ github.run_number }}
 
           KSU Managers:
-          -> ReSukiSU (\`ReSUKI\`) [Manager](https://nightly.link/ReSukiSU/ReSukiSU/workflows/build-manager/main/Manager-release.zip) [CI Channel](https://t.me/ReSukiSU/4)
+          -> BakaSU (\`BakaSU\`) [Manager](https://nightly.link/Baka-SU/BakaSU/workflows/build-manager/main/Manager-release.zip) [CI Channel](https://t.me/BakaSU_Grp/4)
           -> xx's KernelSU (\`xxKSU\`): [Releases](https://github.com/backslashxx/KernelSU/releases) / [KowSU](https://t.me/kowsu_build)
 
           Versions used for KernelSU variants:
-          -> ReSukiSU (\`ReSUKI\`): [${{ env.ReSUKI_V }}](${{ env.ReSUKI.URL }})
+          -> BakaSU (\`BakaSU\`): [${{ env.BakaSU_V }}](${{ env.BakaSU.URL }})
           -> xx's KernelSU (\`xxKSU\`): [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})
 
           ### Unsure about which kernel to choose? [View the README.md file for recommendations](https://github.com/${{ github.repository }}/tree/${{ github.ref_name }}?tab=readme-ov-file#kernel-recommendations).
@@ -453,5 +453,5 @@ jobs:
             📆 *Released*: ${{ env.date }}
             [Release](https://github.com/${{ github.repository }}/releases/tag/${{ env.TAG }}) • [Workflow run](${{ env.run_url }}) • [Nightly](${{ env.nightly_url }})
             
-            • ReSukiSU (ReSUKI) [${{ env.ReSUKI_V }}](${{ env.ReSUKI_URL }})
+            • BakaSU (BakaSU) [${{ env.BakaSU_V }}](${{ env.BakaSU_URL }})
             • xx's KernelSU (xxKSU) [${{ env.xxKSU_V }}](${{ env.xxKSU_URL }})"
